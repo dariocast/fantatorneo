@@ -1,0 +1,861 @@
+openapi: 3.0.1
+info:
+  title: Fanta Torneo
+  version: 1.0.0
+servers:
+  - url: https://dariocast.altervista.org/fantatorneo/api/v1/
+tags:
+  - name: user
+  - name: team
+  - name: lineup
+  - name: player
+  - name: matchday
+  - name: votes
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        200:
+          description: Service up and running
+  /login:
+    post:
+      tags:
+        - user
+      requestBody:
+        required: true
+        description: JSON object containing username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      security: []
+      responses:
+        200:
+          description: Username and password are correct
+        400:
+          description: Incorrect credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+  /register:
+    post:
+      tags:
+        - user
+      requestBody:
+        required: true
+        description: JSON object containing username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      security: []
+      responses:
+        201:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+  /users:
+    get:
+      tags:
+        - user
+      responses:
+        200:
+          description: Users retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{id}:
+    get:
+      tags:
+        - user
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of user that needs to be fetched
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Users retrieved correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - user
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of user that needs to be updated
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Users updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - user
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of user that needs to be deleted
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Users deleted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+
+  /players:
+    get:
+      tags:
+        - player
+      responses:
+        200:
+          description: Players retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+    post:
+      tags:
+        - player
+      requestBody:
+        required: true
+        description: JSON object containing new player values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      security:
+        - basicAuth: []      
+      responses:
+        200:
+          description: Players created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /players/{id}:
+    get:
+      tags:
+        - player
+      parameters:
+        - name: id
+          in: path
+          description: ID of player that needs to be fetched
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Player retrieved correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        404:
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+    put:
+      tags:
+        - player
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of player that needs to be updated
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                group:
+                  type: string
+                gender:
+                  type: string
+                position:
+                  type: string
+                cost:
+                  type: string
+                votes: 
+                  type: array
+                  items:
+                    type: number
+      responses:
+        200:
+          description: Player updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        404:
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - player
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of user that needs to be deleted
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Users deleted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /teams:
+    get:
+      tags:
+        - team
+      responses:
+        200:
+          description: Teams retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+    post:
+      tags:
+        - team
+      requestBody:
+        required: true
+        description: JSON object containing new team values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+      security:
+        - basicAuth: []      
+      responses:
+        200:
+          description: Team created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /teams/{id}:
+    get:
+      tags:
+        - team
+      parameters:
+        - name: id
+          in: path
+          description: ID of team that needs to be fetched
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Team retrieved correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        404:
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+    put:
+      tags:
+        - team
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of team that needs to be updated
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                points:
+                  type: number
+                name:
+                  type: string
+      responses:
+        200:
+          description: Team updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        404:
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - team
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of team that needs to be deleted
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Team deleted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        404:
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /lineup:
+    get:
+      tags:
+        - lineup
+      responses:
+        200:
+          description: Lineups retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lineup'
+    post:
+      tags:
+        - lineup
+      requestBody:
+        required: true
+        description: JSON object containing new lineup values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lineup'
+      security:
+        - basicAuth: []      
+      responses:
+        200:
+          description: Lineup created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lineup'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /lineup/{id}:
+    get:
+      tags:
+        - lineup
+      parameters:
+        - name: id
+          in: path
+          description: ID of lineup that needs to be fetched
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: lineup retrieved correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lineup'
+        404:
+          description: lineup not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+    put:
+      tags:
+        - lineup
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of lineup that needs to be updated
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lineup'
+      responses:
+        200:
+          description: lineup updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lineup'
+        404:
+          description: lineup not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - lineup
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of lineup that needs to be deleted
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: lineup deleted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lineup'
+        404:
+          description: lineup not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /matchday:
+    get:
+      tags:
+        - matchday
+      responses:
+        200:
+          description: matchdays retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Matchday'
+    post:
+      tags:
+        - matchday
+      requestBody:
+        required: true
+        description: JSON object containing new matchday values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Matchday'
+      security:
+        - basicAuth: []      
+      responses:
+        200:
+          description: matchday created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Matchday'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /matchday/{id}:
+    get:
+      tags:
+        - matchday
+      parameters:
+        - name: id
+          in: path
+          description: ID of matchday that needs to be fetched
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: matchday retrieved correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Matchday'
+        404:
+          description: matchday not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+    put:
+      tags:
+        - matchday
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of matchday that needs to be updated
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Matchday'
+      responses:
+        200:
+          description: matchday updated correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Matchday'
+        404:
+          description: matchday not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - matchday
+      security:
+        - basicAuth: []      
+      parameters:
+        - name: id
+          in: path
+          description: ID of matchday that needs to be deleted
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: matchday deleted correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Matchday'
+        404:
+          description: matchday not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    RegistrationRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      properties:
+        id: 
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        admin:
+          type: boolean
+    Player:
+      type: object
+      properties:
+        id: 
+          type: integer
+        name:
+          type: string
+        group:
+          type: string
+        gender:
+          type: string
+        position:
+          type: string
+        cost:
+          type: number
+        votes:
+          type: array
+          items:
+            type: number
+    Team:
+      type: object
+      properties:
+        id: 
+          type: integer
+        userId:
+          type: integer
+        points:
+          type: number
+        name:
+          type: string
+    Lineup:
+      type: object
+      properties:
+        id: 
+          type: integer
+        matchdayId:
+          type: integer
+        userId:
+          type: integer
+        formation:
+          type: string
+        starting:
+          type: array
+          items:
+            type: integer
+        reserves:
+          type: array
+          items:
+            type: integer
+        substitution:
+          type: array
+          items:
+            type: integer
+        points:
+          type: number
+    Matchday:
+      type: object
+      properties:
+        id: 
+          type: integer
+        number:
+          type: integer
+        active:
+          type: boolean
+        evaluated:
+          type: boolean
+        groups:
+          type: array
+          items:
+            type: string
+    Votes:
+      type: object
+      properties:
+        id: 
+          type: integer
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+    GenericError:
+      description: Generic error response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
