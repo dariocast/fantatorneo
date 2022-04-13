@@ -1,0 +1,19 @@
+RewriteEngine on
+Options +FollowSymlinks
+
+RewriteRule ^health$ health.php
+
+RewriteRule ^register$ users/create.php
+RewriteRule ^login$ users/login.php
+
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^users/$ users/read.php
+
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^users/([0-9]+) users/by_id.php?id=$1
+
+RewriteCond %{REQUEST_METHOD} =PUT
+RewriteRule ^users/([0-9]+) users/update.php?id=$1
+
+RewriteCond %{REQUEST_METHOD} =DELETE
+RewriteRule ^users/([0-9]+) users/delete.php?id=$1

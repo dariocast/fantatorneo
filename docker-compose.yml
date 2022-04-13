@@ -17,9 +17,9 @@ services:
     image: mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_DATABASE: 'test'
-      MYSQL_USER: 'test'
-      MYSQL_PASSWORD: 'test'
+      MYSQL_DATABASE: 'my_dariocast'
+      MYSQL_USER: 'dariocast'
+      MYSQL_PASSWORD: 'dcast2311'
     volumes:
       - mysqldata:/var/lib/mysql
     ports:

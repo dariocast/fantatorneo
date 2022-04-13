@@ -3,7 +3,7 @@ info:
   title: Fanta Torneo
   version: 1.0.0
 servers:
-  - url: https://dariocast.altervista.org/fantatorneo/api/v1/
+  - url: https://dariocast.altervista.org/ft/api/v1/
 tags:
   - name: user
   - name: team
@@ -22,14 +22,8 @@ paths:
     post:
       tags:
         - user
-      requestBody:
-        required: true
-        description: JSON object containing username and password
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      security: []
+      security:
+        - basicAuth: []
       responses:
         200:
           description: Username and password are correct
@@ -325,6 +319,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/responses/GenericError'
+        401:
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/UnauthorizedError'
+  /players/votes:
+    get:
+      tags:
+        - votes
+      parameters:
+        - name: matchdays
+          in: query
+          description: matchdays to filter by
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: Players retrieved correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    playerId:
+                      type: integer
+                    playerName:
+                      type: string
+                    votes: 
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          matchday:
+                            type: integer
+                          vote:
+                            type: number
+    post:
+      tags:
+        - votes
+      requestBody:
+        required: true
+        description: JSON object containing new player values
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+      security:
+        - basicAuth: []      
+      responses:
+        200:
+          description: Players created correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
         401:
           description: Unauthorized access
           content:
@@ -725,13 +782,6 @@ paths:
   
 components:
   schemas:
-    LoginRequest:
-      type: object
-      properties:
-        username:
-          type: string
-        password:
-          type: string
     RegistrationRequest:
       type: object
       properties:
@@ -832,11 +882,6 @@ components:
           type: array
           items:
             type: string
-    Votes:
-      type: object
-      properties:
-        id: 
-          type: integer
   securitySchemes:
     basicAuth:
       type: http
