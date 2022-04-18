@@ -36,7 +36,7 @@ if (BasicAuth::authenticated()) {
     } else {
         http_response_code(404);
         $response = new ErrorResponse(
-            "Nessun utente con {$id} trovato.",
+            "Nessun utente con id {$id} trovato.",
             "users/user_not_found"
         );
         echo json_encode(

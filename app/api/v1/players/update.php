@@ -7,9 +7,10 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type");
 
 include_once '../../../config/database.php';
-include_once '../../../models/user.php';
+include_once '../../../models/player.php';
 include_once '../../../models/error_response.php';
 include_once '../../../inc/basic_auth.php';
+include_once '../../../models/user.php';
 
 $id = $_GET['id'];
 $data = json_decode(file_get_contents("php://input"));
@@ -42,39 +43,37 @@ if (!BasicAuth::authenticated()) {
     $db = $database->getConnection();
 
 // initialize object
-    $user = new User($db);
-    $user->id = $id;
+    $player = new Player($db);
+    $player->id = $id;
 
     if (
-        !empty($data->firstname) &&
-        !empty($data->lastname) &&
-        !empty($data->email) &&
-        !empty($data->username) &&
-        !empty($data->password) &&
-        isset($data->admin)
+        !empty($data->name) &&
+        !empty($data->group_name) &&
+        !empty($data->gender) &&
+        !empty($data->position) &&
+        !empty($data->cost)
     ) {
-        $user->firstname = $data->firstname;
-        $user->lastname = $data->lastname;
-        $user->email = $data->email;
-        $user->username = $data->username;
-        $user->password = $data->password;
-        $user->admin = (bool)$data->admin;
+        $player->name = $data->name;
+        $player->group_name = $data->group_name;
+        $player->gender = $data->gender;
+        $player->position = $data->position;
+        $player->cost = $data->cost;
 
         // query products
-        $stmt = $user->update();
+        $stmt = $player->update();
         if ($stmt) {
             // set response code - 200 OK
             http_response_code(200);
 
-            $response = $user;
+            $response = $player;
         } else {
 
             // set response code - 400 Bad Request
             http_response_code(400);
 
             $response = new ErrorResponse(
-                "Errore durante l'aggiornamento dell'utente.",
-                "user_update/unknown_error"
+                "Errore durante l'aggiornamento del giocatore.",
+                "player_update/unknown_error"
             );
         }
     }
@@ -82,8 +81,8 @@ if (!BasicAuth::authenticated()) {
         //400 bad request
         http_response_code(400);
         $response = new ErrorResponse(
-            "Impossibile aggiornare il User, i dati sono incompleti.",
-            "user_update/incomplete_data"
+            "Impossibile aggiornare il giocatore, i dati sono incompleti.",
+            "player_update/incomplete_data"
         );
     }
     echo json_encode(

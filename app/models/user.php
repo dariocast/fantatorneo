@@ -91,7 +91,45 @@ class User
 
     }
 
-    // AGGIORNARE LIBRO
+    function update() {
+        $query = "UPDATE
+                " . $this->table_name . "
+            SET
+                firstname=:firstname,
+                lastname=:lastname,
+                username=:username,
+                email=:email,
+                password=:password,
+                admin=:admin
+            WHERE
+                id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
+        $this->firstname = htmlspecialchars(strip_tags($this->firstname));
+        $this->lastname = htmlspecialchars(strip_tags($this->lastname));
+        $this->username = htmlspecialchars(strip_tags($this->username));
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $this->password = $hashed_password;
+
+        $stmt->bindParam(":firstname", $this->firstname);
+        $stmt->bindParam(":lastname", $this->lastname);
+        $stmt->bindParam(":username", $this->username);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->bindParam(":password", $this->password);
+        $stmt->bindParam(":admin", $this->admin, PDO::PARAM_BOOL);
+
+        $stmt->bindParam(":id", $this->id);
+
+        // execute query
+        if($stmt->execute()){
+            return true;
+        }
+
+        return false;
+
+    }
 
     function delete(){
 

@@ -825,6 +825,7 @@ components:
           type: string
         position:
           type: string
+          enum: [ P, M ]
         cost:
           type: number
         votes:
@@ -882,6 +883,17 @@ components:
           type: array
           items:
             type: string
+    Vote:
+      type: object
+      properties:
+        id:
+          type: integer
+        matchday_id:
+          type: integer
+        player_id:
+          type: integer
+        vote:
+          type: number
   securitySchemes:
     basicAuth:
       type: http

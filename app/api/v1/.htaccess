@@ -17,3 +17,19 @@ RewriteRule ^users/([0-9]+) users/update.php?id=$1
 
 RewriteCond %{REQUEST_METHOD} =DELETE
 RewriteRule ^users/([0-9]+) users/delete.php?id=$1
+
+
+RewriteCond %{REQUEST_METHOD} =POST
+RewriteRule ^player$ players/create.php
+
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^players/$ players/read.php
+
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^players/([0-9]+) players/by_id.php?id=$1
+
+RewriteCond %{REQUEST_METHOD} =PUT
+RewriteRule ^players/([0-9]+) players/update.php?id=$1
+
+RewriteCond %{REQUEST_METHOD} =DELETE
+RewriteRule ^players/([0-9]+) players/delete.php?id=$1

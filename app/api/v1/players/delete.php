@@ -7,9 +7,10 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type");
 
 include_once '../../../config/database.php';
-include_once '../../../models/user.php';
+include_once '../../../models/player.php';
 include_once '../../../models/error_response.php';
 include_once '../../../inc/basic_auth.php';
+include_once '../../../models/user.php';
 
 if (!BasicAuth::authenticated()) {
     //401 unauthorized
@@ -39,28 +40,28 @@ if (!BasicAuth::authenticated()) {
     $db = $database->getConnection();
 
 // initialize object
-    $user = new User($db);
+    $player= new Player($db);
 
     $id = $_GET['id'];
-    $user->id = $id;
+    $player->id = $id;
 // query products
-    $stmt = $user->delete();
+    $stmt = $player->delete();
     if ($stmt) {
         // set response code - 200 OK
         http_response_code(200);
 
-        $response = array("message" => "Utente eliminato con successo.");
+        // show products data in json format
+        $response = array("message" => "Giocatore eliminato con successo.");
     } else {
 
         http_response_code(503);
         $response = new ErrorResponse(
-            "Errore durante l'eliminazione dell'utente.",
-            "delete_user/unknown_error"
+            "Errore durante l'eliminazione del giocatore.",
+            "delete_player/unknown_error"
         );
     }
-
-    echo json_encode(
-        $response
-    );
-
 }
+
+echo json_encode(
+    $response
+);
